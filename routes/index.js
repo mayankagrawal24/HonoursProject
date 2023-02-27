@@ -27,7 +27,7 @@ var generateRandomString = function(length) {
 router.get('/login', function(req, res) {
 
   var state = generateRandomString(16);
-  var scope = 'user-read-private user-read-email';
+  var scope = 'user-read-private user-read-email user-read-playback-state';
   res.cookie(stateKey, state);
 
   res.redirect('https://accounts.spotify.com/authorize?' +
@@ -74,6 +74,7 @@ router.get('/callback', function(req, res) {
 
         var access_token = body.access_token,
             refresh_token = body.refresh_token;
+        userAccessToken = access_token;
 
         var options = {
           url: 'https://api.spotify.com/v1/me',
@@ -141,11 +142,15 @@ router.get('/history', async function(req, res) {
     headers: { 'Authorization': 'Bearer ' + userAccessToken},
     json: true
   }
-  let listeningData = await request.get(options)
-  console.log("GETTING DATA")
-  console.log(listeningData)
+  
+  request.get(options, function(error, response, body) {
+    console.log("GETTING DATA")
+    console.log(body)
+  
+  }) 
+
   console.log("GETTING DEVICE")
-  console.log(listeningData.device)
+  console.log(userAccessToken)
 
 })
 
