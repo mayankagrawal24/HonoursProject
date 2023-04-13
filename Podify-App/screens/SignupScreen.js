@@ -30,10 +30,14 @@ export default function SignupScreen({ navigation }) {
   const onHandleSignup = async () => {
     try {
       if (email !== '' && password !== '') {
+        //Creating the user on firebase using built in auth information
         await auth.createUserWithEmailAndPassword(email, password);
+        //Initalizing the user document so that the expo notification token can be saved for a specific user on signup 
         await auth.onAuthStateChanged(async (user) => {
           if (user) {
+              //Getting push notification token
               const token = await registerForPushNotificationsAsync();
+              //Creating a document for user and setting data
               var userRef = FireStore.doc(`user/${user.uid}`);
               let res = await userRef.set({uid: user.uid, notifToken: token})
           }
