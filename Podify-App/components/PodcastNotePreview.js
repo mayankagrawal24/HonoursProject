@@ -1,25 +1,40 @@
 import React, { Component } from 'react'
 import { Text, View, StyleSheet, TouchableHighlightComponent, TouchableOpacity, Image } from 'react-native'
 import colours from '../config/colours';
+import { AirbnbRating } from 'react-native-ratings';
 
-export default class Note extends Component {
+export default class PodcastNotePreview extends Component {
     render() {
         const imgUrl = this.props.image.constructor === Array ? this.props.image[0].url : this.props.image.url;
         return (
             <TouchableOpacity 
                 style={styles.itemContainer}
-                onPress={() => {this.props.navigation.navigate('Edit', { noteId: this.props.noteId })}}
+                onPress={() => {this.props.navigation.navigate('Single Note', {rating: this.props.rating, noteData: this.props.noteContent, title: this.props.title, showName: this.props.by})}}
             >
                 <View style={styles.itemTop}>
                     <Image style={styles.itemImage} source={{uri: imgUrl}} />
 
                     <View style={styles.itemTopText}>
-                        <Text style={styles.itemTitle} numberOfLines={2} ellipsizeMode={'tail'} > {this.props.title} </Text>
-                        <Text style={styles.itemBy} numberOfLines={1}> {this.props.by} </Text>
+                        <Text style={styles.itemContent} numberOfLines={1}> {this.props.noteContent} </Text>
+                        {/* <Text style={styles.itemTitle} numberOfLines={2} ellipsizeMode={'tail'} > {this.props.title} </Text>
+                        <Text style={styles.itemBy} numberOfLines={1}> {this.props.by} </Text> */}
                     </View> 
                 </View>
 
-                <Text style={styles.itemContent} numberOfLines={1}> {this.props.noteContent} </Text>
+                {/* <Text style={styles.itemContent} numberOfLines={1}> {this.props.noteContent} </Text> */}
+                <View style={{ flexDirection: "row", paddingTop: 20 }}>
+                <View style={{ flex: 1 }}>
+                    <Text style={styles.itemBy}>User Rating: </Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                    <AirbnbRating
+                    count={5}
+                    defaultRating={this.props.rating}
+                    size={20}
+                    showRating={false}
+                    />
+                </View>
+            </View>
                 
             </TouchableOpacity>
         )

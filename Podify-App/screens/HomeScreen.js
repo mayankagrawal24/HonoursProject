@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 // import React, { useContext } from 'react';
 // import { StyleSheet, Text, View } from 'react-native';
-
+import { useFocusEffect } from '@react-navigation/native';
 import React, { useContext, useState, useEffect, useRef } from 'react'
 import { Text, View, ScrollView, StyleSheet, Button, AppState } from 'react-native'
 
@@ -19,6 +19,7 @@ export default function HomeScreen(props) {
   const { user } = useContext(AuthenticatedUserContext);
   const [notes, setNotes] = useState(null);
   const [loaded, setLoaded] = useState(false);
+  const [isEmpty, setIsEmpty] = useState(false);
   const appState = useRef(AppState.currentState);
 
   useEffect(() => {
@@ -63,15 +64,26 @@ export default function HomeScreen(props) {
         />);
     });
     setNotes(noteArray);
+    setIsEmpty(noteArray.length === 0);
     setLoaded(true);
   }
 
-  useEffect(() => {
-      const unsubscribe = props.navigation.addListener('focus', () => {
-          getNotes();
-        });
-      return unsubscribe;
-    }, [props.navigation]);
+  // useEffect(() => {
+  //     const unsubscribe = props.navigation.addListener('focus', () => {
+  //         getNotes();
+  //       });
+  //     return unsubscribe;
+  //   }, [props.navigation]);
+
+    useFocusEffect(
+      React.useCallback(() => {
+        const getNotesAndSetState = async () => {
+          await getNotes();
+        };
+    
+        getNotesAndSetState();
+      }, [])
+    );
 
     return (
       // <View style={styles.container}>
@@ -101,7 +113,7 @@ export default function HomeScreen(props) {
         <View style={styles.itemContainer}>
             <ScrollView style={styles.items}>
                 {/* This is where notes will go */}
-                {loaded ? notes : <Text>Loading</Text>}
+                {loaded ? (isEmpty ? <Text style={styles.emptyMessage}>Start Listening to Podcasts for Them To Appear!</Text> : notes) : <Text>Loading</Text>}
             </ScrollView>
         </View>
 
@@ -109,7 +121,8 @@ export default function HomeScreen(props) {
             <Button style={styles.footerBtn} title="Sign out" onPress={handleSignOut}/>
             {/* <Button title="Check login" onPress={() => {console.log(user)}}/> */}
             <Button style={styles.footerBtn} title="Spotify" onPress={() => {props.navigation.navigate('Spotify')}}/>
-            <Button style={styles.footerBtn} title="Notification System" onPress={() => {props.navigation.navigate('Notification System')}}/>
+            <Button style={styles.footerBtn} title="Community" onPress={() => {props.navigation.navigate('Community')}}/>
+            {/*<Button style={styles.footerBtn} title="Notification System" onPress={() => {props.navigation.navigate('Notification System')}}/> */}
         </View>
       </View>
 
@@ -153,7 +166,7 @@ const styles = StyleSheet.create({
       paddingTop: 20,
   },
   mainTitle: {
-      fontSize: 24,
+      fontSize: 40,
       fontWeight: 'bold',
       color: colours.primary,
   },
@@ -178,5 +191,11 @@ const styles = StyleSheet.create({
   itemContainer: {
     paddingTop: 10,
   paddingBottom: 200, 
+  },
+  emptyMessage: {
+    color:'#fff',
+    fontSize: 24,
+    textAlign: 'center',
+    marginTop: 20, // Adjust this value to vertically position the message
   }
 });

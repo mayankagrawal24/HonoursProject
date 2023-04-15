@@ -234,6 +234,8 @@ exports.pollToLookForPodcast = functions.pubsub.schedule('* * * * *')
                         showName: show.name,
                         spotifyUrl: show.external_urls.spotify,
                         notesData: "The tale is yours to tell",
+                        noteIsPublic: false,
+                        rating: null,
                         dataSetTime: dt,
                         lastNotifTime: dt
                     }
@@ -287,7 +289,97 @@ async function sendNotification(pushToken, noteId) {
 }
 
 
+exports.getPodcastsWithReviews = functions.https.onRequest(async (request, response) => {
+    //return "Creating the user doc"
+    functions.logger.log("Getting Podcast Function");
+    //functions.logger.log(data);
 
+    //get the podcasts
+    try {
+        var podcastRef = firestore.collection('podcast');
+        var snapshot = await podcastRef.get();
+        //var documents = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    
+        //console.log(documents); // This will log an array of documents from the collection
+        //response.send(documents)
+
+        var podcastsWithReviews = [];
+    
+        // Iterate over each podcast document
+        for (const doc of snapshot.docs) {
+          const podcastId = doc.id;
+          const podcastData = doc.data();
+          
+          // Fetch the reviews subcollection
+          const reviewsSnapshot = await firestore.collection(`podcast/${podcastId}/reviews`).get();
+          if (reviewsSnapshot.size > 0) {
+            // Calculate the average review score
+            let sum = 0;
+            let count = 0
+            reviewsSnapshot.forEach(reviewDoc => {
+                console.log(reviewDoc.data())
+              if (reviewDoc.data().rating != null) {
+                sum += reviewDoc.data().rating;
+                count++
+              } 
+            });
+            const avgScore = parseFloat((sum / count).toFixed(1));
+            console.log(avgScore)
+    
+            // Set the avgScore as the review score for the podcast
+            podcastData.reviewScore = avgScore;
+          } else {
+            // Set the review score to null if no reviews are found
+            podcastData.reviewScore = null;
+          }
+    
+          // Add the podcast data to the podcastsWithReviews array
+          podcastsWithReviews.push({ id: podcastId, ...podcastData });
+        }
+        
+        console.log("Ending")
+        console.log(podcastsWithReviews); // This will log an array of documents from the collection with the average review score
+        response.send(podcastsWithReviews);
+        //return documents;
+      } catch (error) {
+        console.error('Error fetching documents:', error);
+      }
+
+  });
+
+exports.getPodcastPublicNotes = functions.https.onRequest(async (request, response) => {
+    
+    if (!request.query.podcastID) {
+        response.status(400).send('Missing podcastID parameter');
+        return;
+    }
+    let podcastID = request.query.podcastID;
+    console.log(podcastID)
+    // Get all users
+    const usersSnapshot = await firestore.collection('user').get();
+    // Initialize an array to store notes for all users
+    let allNotes = [];
+    try {
+        for (var userDoc of usersSnapshot.docs) {
+            // Get user's notes with matching podcastID
+            console.log("UserDoc with id" + userDoc.id)
+
+            const noteDoc = await firestore.doc(`user/${userDoc.id}/notes/${podcastID}`).get();
+            // If notes found, add them to the allNotes array
+            if (noteDoc.exists) {
+                const note = { id: noteDoc.id, ...noteDoc.data() };
+                if (note.noteIsPublic){
+                    allNotes.push(note);
+                } 
+              }
+        }
+        response.send(allNotes);
+    } catch (error) {
+    console.error('Error fetching notes:', error);
+    response.status(500).send({ error: 'Error fetching notes' });
+    }
+
+    });
 
 
 // testing the login process

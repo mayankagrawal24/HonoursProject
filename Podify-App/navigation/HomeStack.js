@@ -5,6 +5,9 @@ import HomeScreen from '../screens/HomeScreen';
 import EditScreen from '../screens/EditScreen';
 import SpotifyConnectScreen from '../screens/SpotifyConnectScreen';
 import NotificationScreen from '../screens/NotificationScreen';
+import CommunityScreen from '../screens/CommunityScreen';
+import PodcastNotesScreen from '../screens/PodcastNotesScreen';
+import SinglePodcastNoteScreen from '../screens/SinglePodcastNoteScreen';
 import colours from '../config/colours';
 
 
@@ -16,6 +19,23 @@ export default function HomeStack() {
       <Stack.Screen name='Home' component={HomeScreen} />
 
       <Stack.Screen name='Edit' component={EditScreen} options={{
+        headerStyle: {
+          backgroundColor: colours.primary,
+        },
+      }}/>
+      <Stack.Screen name='Community' component={CommunityScreen} options={{
+        headerStyle: {
+          backgroundColor: colours.primary,
+        },
+      }}/>
+
+      <Stack.Screen name='Podcast Notes' component={PodcastNotesScreen} options={{
+        headerStyle: {
+          backgroundColor: colours.primary,
+        },
+      }}/>
+
+      <Stack.Screen name='Single Note' component={SinglePodcastNoteScreen} options={{
         headerStyle: {
           backgroundColor: colours.primary,
         },
