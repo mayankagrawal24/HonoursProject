@@ -11,5 +11,6 @@ that the users must connect to give it access to the user’s podcast listening 
 
 ##  App Layout and Screens
 
+![image](https://github.com/user-attachments/assets/f03dfaf2-fe29-4933-b45b-daca33a9b72f)
 
 
