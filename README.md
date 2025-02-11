@@ -1,6 +1,15 @@
-# HonoursProject
+# Podify - An App to Always Remember your Podcasts.
 
-The Podify App - Folder contains the client code.
-The functions folder contains backend functions.
+Podify is a mobile application that is created to help individuals better remember
+information that they hear while listening to podcasts. Podcast listeners often face the harsh
+reality of struggling to remember the content that they have just spent the last hour listening to.
+Podify enables its users to automatically be notified when they begin listening to a podcast and
+gives them a sleek and effective platform to store notes on their thoughts regarding their favorite
+podcasts. Podify also enables its users to see what other users are listening to, and even see what
+others are thinking about certain podcasts. Podify uses Spotify as the podcast listening platform
+that the users must connect to give it access to the user’s podcast listening information. 
 
-To run the client use npx expo start in the Podify-App folder
+##  App Layout and Screens
+
+
+
